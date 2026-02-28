@@ -4,5 +4,5 @@ router = APIRouter()
 
 
 @router.get("/getName")
-async def getName():
+async def get_name():
     return "Hi Darshan How Are you"
