@@ -83,7 +83,7 @@ jobs:
         # Clone Helm deployment repo
       - name: Clone Helm repo
         run: |
-          git clone https://${{ secrets.GIT_TOKEN }}@github.com:DimpuChr/fastapi-chart.git
+          git clone https://${{ secrets.GIT_TOKEN }}@github.com/DimpuChr/fastapi-chart.git
           cd fastapi-chart
 
         # Update image tag in values file
