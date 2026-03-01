@@ -89,7 +89,7 @@ jobs:
         # Update image tag in values file
       - name: Update image tag
         run: |
-          cd fastapi-deploy
+          cd fastapi-chart
           CURRENT_TAG=$(yq e '.image.tag' helm/fastapi-chart/values.yaml)
           
           if [ "$CURRENT_TAG" != "${{ github.sha }}" ]; then
