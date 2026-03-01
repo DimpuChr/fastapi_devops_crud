@@ -98,7 +98,7 @@ jobs:
             git config user.name "DimpuChr"
             git config user.email "bmdarshan.c@gmail.com"
           
-            git add git add values.yaml
+            git add values.yaml
             git commit -m "Update image tag to ${{ github.sha }}"
             git push https://${{ secrets.GIT_TOKEN }}@github.com/DimpuChr/fastapi-chart.git main
           
