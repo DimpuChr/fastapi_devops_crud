@@ -43,7 +43,7 @@ jobs:
   # 2️⃣ CD Job - Docker Build & Push
   # -------------------------
 
-  cd:
+  dockeerpush:
     runs-on: ubuntu-latest
     needs: ci
 
@@ -67,3 +67,41 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+    # -------------------------
+    # 3️⃣ Update Helm Repo (GitOps)
+    #
+  update_helm:
+    runs-on: ubuntu-latest
+    needs: cd
+    steps:
+      - name: Install yq
+        run: |
+          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
+
+        # Clone Helm deployment repo
+      - name: Clone Helm repo
+        run: |
+          git clone https://${{ secrets.GIT_TOKEN }}@github.com:DimpuChr/fastapi-chart.git
+          cd fastapi-chart
+
+        # Update image tag in values file
+      - name: Update image tag
+        run: |
+          cd fastapi-deploy
+          CURRENT_TAG=$(yq e '.image.tag' helm/fastapi-chart/values.yaml)
+          
+          if [ "$CURRENT_TAG" != "${{ github.sha }}" ]; then
+            yq e ".image.tag = \"${{ github.sha }}\"" -i values.yaml
+          
+            git config user.name "DimpuChr"
+            git config user.email "bmdarshan.c@gmail.com"
+          
+            git add git add values.yaml
+            git commit -m "Update image tag to ${{ github.sha }}"
+            git push https://${{ secrets.GIT_TOKEN }}@github.com/DimpuChr/fastapi-chart.git main
+          
+          else
+            echo "Image tag already up-to-date. Skipping commit."
+          fi
