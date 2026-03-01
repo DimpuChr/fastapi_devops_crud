@@ -90,7 +90,7 @@ jobs:
       - name: Update image tag
         run: |
           cd fastapi-chart
-          CURRENT_TAG=$(yq e '.image.tag' fastapi-chart/values.yaml)
+          CURRENT_TAG=$(yq e '.image.tag' values.yaml)
           
           if [ "$CURRENT_TAG" != "${{ github.sha }}" ]; then
             yq e ".image.tag = \"${{ github.sha }}\"" -i values.yaml
